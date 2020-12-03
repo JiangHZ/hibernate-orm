@@ -317,6 +317,14 @@ public class QueryParameterBindingsImpl implements QueryParameterBindings {
 //		return values.toArray( new Object[values.size()] );
 	}
 
+	@Override
+	public boolean isMultiValuedBinding(QueryParameter parameter) {
+		if ( parameterListBindingMap == null ) {
+			return false;
+		}
+		return parameterListBindingMap.containsKey( parameter );
+	}
+
 	/**
 	 * @deprecated (since 5.2) expect a different approach to org.hibernate.engine.spi.QueryParameters in 6.0
 	 */
@@ -538,7 +546,11 @@ public class QueryParameterBindingsImpl implements QueryParameterBindings {
 			if ( inClauseParameterPaddingEnabled ) {
 				int bindValuePaddingCount = MathHelper.ceilingPowerOfTwo( bindValueCount );
 
-				if ( bindValueCount < bindValuePaddingCount && (inExprLimit == 0 || bindValuePaddingCount < inExprLimit) ) {
+				if ( inExprLimit > 0 && bindValuePaddingCount > inExprLimit ) {
+					bindValuePaddingCount = inExprLimit;
+				}
+
+				if ( bindValueCount < bindValuePaddingCount ) {
 					bindValueMaxCount = bindValuePaddingCount;
 				}
 			}

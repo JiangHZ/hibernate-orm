@@ -356,7 +356,7 @@ public abstract class CollectionType extends AbstractType implements Association
 	public boolean isDirty(Object old, Object current, SharedSessionContractImplementor session)
 			throws HibernateException {
 
-		// collections don't dirty an unversioned parent entity
+		// collections don't dirty an un-versioned parent entity
 
 		// TODO: I don't really like this implementation; it would be better if
 		// this was handled by searchForDirtyCollections()
@@ -742,7 +742,8 @@ public abstract class CollectionType extends AbstractType implements Association
 		// need to put the merged elements in a new collection
 		Object result = ( target == null ||
 				target == original ||
-				target == LazyPropertyInitializer.UNFETCHED_PROPERTY ) ?
+				target == LazyPropertyInitializer.UNFETCHED_PROPERTY ||
+				target instanceof PersistentCollection && ( (PersistentCollection) target ).isWrapper( original ) ) ?
 				instantiateResult( original ) : target;
 
 		//for arrays, replaceElements() may return a different reference, since
